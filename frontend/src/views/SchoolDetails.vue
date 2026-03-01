@@ -1,4 +1,7 @@
 <script setup>
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const APP_DOMAIN = import.meta.env.VITE_APP_DOMAIN || '.localhost'
+
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
@@ -223,7 +226,7 @@ onMounted(() => {
         <div class="bg-white rounded-[24px] border border-[#f0e8df] shadow-sm overflow-hidden p-6 relative">
           <div class="flex items-start gap-4">
              <div class="h-20 w-20 rounded-2xl bg-[#fcf9f4] border border-[#e8ded1] flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm p-1">
-                <img v-if="school.logo" :src="`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}'}/storage/${school.logo}`" class="h-full w-full object-cover rounded-xl" />
+                <img v-if="school.logo" :src="`${API_URL}/storage/${school.logo}`" class="h-full w-full object-cover rounded-xl" />
                 <span v-else class="text-2xl font-black text-[#157f7f]">{{ school.name.charAt(0) }}</span>
              </div>
              <div class="flex-1">

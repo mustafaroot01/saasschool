@@ -1,4 +1,7 @@
 <script setup>
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const APP_DOMAIN = import.meta.env.VITE_APP_DOMAIN || '.localhost'
+
 import { ref, computed, onMounted, watch } from 'vue'
 import { CheckCircleIcon, XCircleIcon, CalendarDaysIcon, ViewfinderCircleIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
 import api from '../axios'
@@ -192,7 +195,7 @@ onMounted(() => {
               <td class="px-6 py-5 align-middle">
                 <div class="flex items-center gap-3">
                   <div class="h-10 w-10 rounded-xl bg-[#fcf9f4] border border-[#e8ded1] flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img v-if="school.logo" :src="`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}'}/storage/${school.logo}`" class="h-full w-full object-cover" />
+                    <img v-if="school.logo" :src="`${API_URL}/storage/${school.logo}`" class="h-full w-full object-cover" />
                     <span v-else class="text-xs font-black text-[#157f7f]">{{ school.name.charAt(0) }}</span>
                   </div>
                   <div class="flex flex-col gap-0.5">

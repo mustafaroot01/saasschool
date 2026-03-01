@@ -1,4 +1,7 @@
 <script setup>
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const APP_DOMAIN = import.meta.env.VITE_APP_DOMAIN || '.localhost'
+
 import { ref, onMounted, computed } from 'vue'
 import { CloudArrowDownIcon, MagnifyingGlassIcon, FunnelIcon } from '@heroicons/vue/24/outline'
 import api from '../axios'
@@ -55,7 +58,7 @@ const formatSize = (bytes) => {
 }
 
 const downloadBackup = (backup) => {
-    window.open(`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}'}/api/schools/${backup.school_id}/backups/${backup.name}`, '_blank')
+    window.open(`${API_URL}/api/schools/${backup.school_id}/backups/${backup.name}`, '_blank')
 }
 
 const deleteAllBackups = async () => {
