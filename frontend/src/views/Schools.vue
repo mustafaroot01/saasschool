@@ -88,11 +88,11 @@ const editSchool = (school) => {
     id: school.id,
     name: school.name,
     plan_id: school.plan_id,
-    domain: school.domains?.[0]?.domain?.replace('.localhost', '') || '',
+    domain: school.domains?.[0]?.domain?.replace('${import.meta.env.VITE_APP_DOMAIN || '${import.meta.env.VITE_APP_DOMAIN || '.localhost'}'}', '') || '',
     contact_email: school.contact_email || '',
     contact_phone: school.contact_phone || ''
   }
-  logoPreview.value = school.logo ? `http://localhost:8000/storage/${school.logo}` : null
+  logoPreview.value = school.logo ? `${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}'}/storage/${school.logo}` : null
   logoFile.value = null
   showModal.value = true
 }
@@ -112,7 +112,7 @@ const saveSchool = async () => {
     const data = new FormData()
     data.append('name', form.value.name)
     if (form.value.plan_id) data.append('plan_id', form.value.plan_id)
-    data.append('domain', (form.value.domain || '') + '.localhost')
+    data.append('domain', (form.value.domain || '') + '${import.meta.env.VITE_APP_DOMAIN || '${import.meta.env.VITE_APP_DOMAIN || '.localhost'}'}')
     if (form.value.contact_email) data.append('contact_email', form.value.contact_email)
     if (form.value.contact_phone) data.append('contact_phone', form.value.contact_phone)
     if (logoFile.value) data.append('logo', logoFile.value)
@@ -127,7 +127,7 @@ const saveSchool = async () => {
         newSchoolCredentials.value = {
           email: response.data.admin_email,
           password: response.data.admin_password,
-          domain: form.value.domain + '.localhost'
+          domain: form.value.domain + '${import.meta.env.VITE_APP_DOMAIN || '${import.meta.env.VITE_APP_DOMAIN || '.localhost'}'}'
         }
       }
     }
@@ -272,7 +272,7 @@ onMounted(() => {
               <td class="px-4 py-5 align-middle">
                 <div class="flex items-center gap-3">
                   <div class="h-10 w-10 rounded-xl bg-[#fcf9f4] border border-[#e8ded1] flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img v-if="school.logo" :src="`http://localhost:8000/storage/${school.logo}`" class="h-full w-full object-cover" />
+                    <img v-if="school.logo" :src="`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}'}/storage/${school.logo}`" class="h-full w-full object-cover" />
                     <span v-else class="text-xs font-black text-[#157f7f]">{{ school.name.charAt(0) }}</span>
                   </div>
                   <span class="text-xs font-black text-slate-800 truncate max-w-[150px]">{{ school.name }}</span>
@@ -401,7 +401,7 @@ onMounted(() => {
               <label class="block text-[11px] font-black text-slate-400 mr-1 uppercase">الدومين</label>
               <div class="relative flex items-center">
                 <input type="text" v-model="form.domain" :required="!isEditing" class="block w-full px-4 py-2.5 bg-[#fcf9f4] border border-[#e8ded1] rounded-xl text-sm outline-none focus:border-[#157f7f] text-left pr-4 pl-20" dir="ltr" />
-                <span class="absolute left-3 text-[10px] font-black text-slate-300" dir="ltr">.localhost</span>
+                <span class="absolute left-3 text-[10px] font-black text-slate-300" dir="ltr">${import.meta.env.VITE_APP_DOMAIN || '${import.meta.env.VITE_APP_DOMAIN || '.localhost'}'}</span>
               </div>
             </div>
 

@@ -55,7 +55,7 @@ const formatSize = (bytes) => {
 }
 
 const downloadBackup = (backup) => {
-    window.open(`http://localhost:8000/api/schools/${backup.school_id}/backups/${backup.name}`, '_blank')
+    window.open(`${import.meta.env.VITE_API_BASE_URL || '${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}'}/api/schools/${backup.school_id}/backups/${backup.name}`, '_blank')
 }
 
 const deleteAllBackups = async () => {
