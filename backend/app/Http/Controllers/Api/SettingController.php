@@ -15,7 +15,13 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
-        $settings = $request->all();
+        $allowedKeys = [
+            'site_name', 'site_email', 'site_phone', 'site_address',
+            'currency', 'timezone', 'tax_number', 'invoice_terms',
+            'logo', 'favicon', 'primary_color', 'secondary_color',
+        ];
+
+        $settings = $request->only($allowedKeys);
 
         foreach ($settings as $key => $value) {
             Setting::updateOrCreate(
@@ -26,4 +32,5 @@ class SettingController extends Controller
 
         return response()->json(['message' => 'Settings updated successfully']);
     }
+
 }

@@ -15,12 +15,19 @@ class SubscriptionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'tenant_id' => 'required|exists:tenants,id',
-            'plan_id' => 'required|exists:plans,id',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date',
-            'status' => 'in:active,expired,suspended,canceled',
+            'tenant_id'      => 'required|exists:tenants,id',
+            'plan_id'        => 'required|exists:plans,id',
+            'start_date'     => 'required|date',
+            'end_date'       => 'nullable|date',
+            'status'         => 'in:active,expired,suspended,canceled',
+            'amount'         => 'nullable|numeric|min:0',
+            'payment_status' => 'in:paid,unpaid',
         ]);
+
+        $validated['invoice_number'] = 'INV-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
+        $validated['currency']       = 'IQD';
+        $validated['payment_status'] = $validated['payment_status'] ?? 'unpaid';
+        $validated['amount']         = $validated['amount'] ?? 0;
 
         $subscription = \App\Models\Subscription::create($validated);
         return response()->json(['message' => 'Subscription created successfully', 'subscription' => $subscription], 201);
@@ -69,6 +76,11 @@ class SubscriptionController extends Controller
             // Generate Invoice Number: INV-YYYYMMDD-RAND
             $invoiceNumber = 'INV-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(2)));
 
+            // Update Tenant plan and dates FIRST to avoid deadlock with subscription foreign key
+            $tenant->plan_id = $request->plan_id;
+            $tenant->subscription_end_date = $request->subscription_end_date;
+            $tenant->save();
+
             // Log the renewal in the subscriptions table
             $subscription = \App\Models\Subscription::create([
                 'tenant_id' => $tenant->id,
@@ -81,11 +93,6 @@ class SubscriptionController extends Controller
                 'invoice_number' => $invoiceNumber,
                 'payment_status' => $request->payment_status,
             ]);
-
-            // Update Tenant plan and dates
-            $tenant->plan_id = $request->plan_id;
-            $tenant->subscription_end_date = $request->subscription_end_date;
-            $tenant->save();
 
             return response()->json([
                 'message' => 'Subscription renewed successfully',

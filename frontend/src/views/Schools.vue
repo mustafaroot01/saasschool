@@ -172,12 +172,15 @@ const openCreateModal = () => {
 }
 
 const toggleStatus = async (school) => {
+  error.value = null
   const newStatus = school.status === 'active' ? 'suspended' : 'active'
+  const oldStatus = school.status
+  school.status = newStatus // optimistic update
   try {
     await api.put(`/api/schools/${school.id}`, { status: newStatus })
-    school.status = newStatus // optimistic update
-  } catch {
-    error.value = 'تعذّر تغيير حالة المدرسة، حاول مجدداً.'
+  } catch (err) {
+    school.status = oldStatus // revert on failure
+    error.value = err.response?.data?.message || 'تعذّر تغيير حالة المدرسة، حاول مجدداً.'
   }
 }
 

@@ -12,13 +12,12 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         async login(email, password) {
             try {
-                await api.get('/sanctum/csrf-cookie', { withCredentials: true })
-                const response = await api.post('/login', {
+                const response = await api.post('/api/login', {
                     email,
                     password
-                }, { withCredentials: true })
+                })
 
-                this.token = response.data.token || 'simulated-token-if-cookie-only'
+                this.token = response.data.token
                 localStorage.setItem('saas_admin_token', this.token)
 
                 await this.fetchUser()
@@ -34,7 +33,10 @@ export const useAuthStore = defineStore('auth', {
                 const response = await api.get('/api/user')
                 this.user = response.data
             } catch (error) {
-                this.logout()
+                // Only logout if it's a 401 (unauthorized), not other errors
+                if (error.response?.status === 401) {
+                    this.logout()
+                }
             }
         },
 

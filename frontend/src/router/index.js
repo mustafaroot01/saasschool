@@ -78,14 +78,19 @@ const router = createRouter({
     ]
 })
 
-router.beforeEach((to, from, next) => {
+// Add catch-all - redirect unknown routes
+router.addRoute({
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
+})
+
+router.beforeEach((to) => {
     const authStore = useAuthStore()
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-        next('/login')
-    } else if (to.name === 'login' && authStore.isAuthenticated) {
-        next('/')
-    } else {
-        next()
+        return '/login'
+    }
+    if (to.name === 'login' && authStore.isAuthenticated) {
+        return '/'
     }
 })
 

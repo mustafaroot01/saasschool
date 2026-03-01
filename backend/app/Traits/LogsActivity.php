@@ -32,9 +32,15 @@ trait LogsActivity
     {
         $userId = Auth::id() ?? request()->user()?->id ?? null;
         
-        // Exclude some fields from logging like updated_at
-        if (is_array($oldValues)) unset($oldValues['updated_at']);
-        if (is_array($newValues)) unset($newValues['updated_at']);
+        // Exclude some fields from logging like updated_at and sensitive data
+        $sensitiveFields = ['password', 'remember_token', 'token', 'api_key', 'secret'];
+        if (is_array($oldValues)) {
+            $oldValues = array_diff_key($oldValues, array_flip(array_merge(['updated_at'], $sensitiveFields)));
+        }
+        if (is_array($newValues)) {
+            $newValues = array_diff_key($newValues, array_flip(array_merge(['updated_at'], $sensitiveFields)));
+        }
+
 
         ActivityLog::create([
             'user_id' => $userId,

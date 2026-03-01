@@ -19,11 +19,8 @@ const handleLogin = async () => {
         await authStore.login(email.value, password.value)
         router.push('/')
     } catch (error) {
-        if (error.response?.status === 422) {
-            errorMessage.value = error.response.data.message || 'بيانات الدخول غير صحيحة.'
-        } else {
-            errorMessage.value = 'البيانات غير صحيحة أو هناك مشكلة في الاتصال.'
-        }
+        const msg = error.response?.data?.message
+        errorMessage.value = msg || `خطأ (${error.response?.status || 'network'}): ${error.message}`
     } finally {
         isLoading.value = false
     }

@@ -55,6 +55,7 @@ class SchoolController extends Controller
             'name'          => $validated['name'],
             'plan_id'       => $plan->id,
             'subscription_end_date' => $subscriptionEndDate,
+            'status'        => 'active',
             'contact_email' => $validated['contact_email'] ?? null,
             'contact_phone' => $validated['contact_phone'] ?? null,
             'logo'          => $logoPath,
@@ -212,7 +213,8 @@ class SchoolController extends Controller
         }
 
         $domain = $tenant->domains->first()->domain ?? $tenant->id;
-        $url = "http://{$domain}:5173/auth/impersonate?token={$tokenStr}";
+        $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
+        $url = "{$frontendUrl}/auth/impersonate?token={$tokenStr}";
 
         return response()->json(['url' => $url]);
     }

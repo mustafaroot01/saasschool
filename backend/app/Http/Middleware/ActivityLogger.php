@@ -17,12 +17,13 @@ class ActivityLogger
             
             $action = $this->determineAction($request);
             if ($action) {
+                $user = $request->user();
                 \App\Models\ActivityLog::create([
-                    'user_id' => $request->user() ? $request->user()->id : null,
+                    'user_id' => $user ? $user->id : null,
                     'action' => $action,
-                    'description' => json_encode($request->except(['password', 'password_confirmation', 'logo'])),
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
+                    'description' => json_encode($request->except(['password', 'password_confirmation', 'logo', '_method'])),
+                    'ip_address' => $request->ip() ?? '0.0.0.0',
+                    'user_agent' => $request->userAgent() ?? 'unknown',
                 ]);
             }
         }
@@ -50,6 +51,12 @@ class ActivityLogger
             if ($method === 'POST') return 'إضافة باقة جديدة';
             if ($method === 'PUT' || $method === 'PATCH') return 'تعديل باقة';
             if ($method === 'DELETE') return 'حذف باقة';
+        }
+
+        if (str_starts_with($path, 'api/subscriptions')) {
+            if ($method === 'POST' && str_ends_with($path, 'renew')) return 'تجديد اشتراك مدرسة';
+            if ($method === 'PUT' || $method === 'PATCH') return 'تغيير حالة دفع اشتراك';
+            if ($method === 'DELETE') return 'حذف سجل اشتراكات';
         }
 
         return null; // Ignore other routes like login
